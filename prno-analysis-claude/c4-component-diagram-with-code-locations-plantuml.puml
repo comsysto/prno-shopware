@@ -1,0 +1,183 @@
+@startuml Shopware-Core-Backend-Components-With-Locations
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component diagram for Shopware Core Backend API (with Code Locations)
+
+' External Containers
+Container_Ext(admin_app, "Administration App", "Vue.js 3", "Admin interface")
+Container_Ext(storefront_app, "Storefront App", "PHP/Twig", "Customer interface")
+ContainerDb_Ext(database, "Primary Database", "MySQL/MariaDB", "Business data storage")
+Container_Ext(search_engine, "Search Engine", "Elasticsearch", "Product search")
+Container_Ext(cache_system, "Cache System", "Redis/Filesystem", "Performance cache")
+Container_Ext(message_queue, "Message Queue", "Symfony Messenger", "Async processing")
+Container_Ext(file_storage, "File Storage", "Filesystem/S3", "Media files")
+
+' External Systems
+System_Ext(payment_gateway, "Payment Providers", "Payment processing")
+System_Ext(shipping_provider, "Shipping Providers", "Logistics services")
+System_Ext(email_service, "Email Service", "SMTP servers")
+System_Ext(external_systems, "External Systems", "Third-party integrations")
+
+Container_Boundary(core_api, "Core Backend API") {
+
+    ' API Layer Components
+    Component(admin_api_controller, "Admin API Controller", "Symfony Controller", "RESTful CRUD operations for all entities\nLocation: /src/Core/Framework/Api/Controller/")
+    Component(store_api_routes, "Store API Routes", "Symfony Routes", "Customer-facing API endpoints\nLocation: /src/Core/System/SalesChannel/Api/")
+    Component(auth_service, "Authentication Service", "OAuth2/JWT", "Token-based authentication and ACL\nLocation: /src/Core/Framework/Api/OAuth/")
+    Component(context_factory, "Context Factory", "Symfony Service", "Request context creation and validation\nLocation: /src/Core/System/SalesChannel/Context/")
+
+    ' Checkout Domain Components
+    Component(cart_service, "Cart Service", "Domain Service", "Shopping cart management and calculations\nLocation: /src/Core/Checkout/Cart/")
+    Component(order_service, "Order Service", "Domain Service", "Order processing and state management\nLocation: /src/Core/Checkout/Order/")
+    Component(payment_service, "Payment Service", "Domain Service", "Payment processing and transactions\nLocation: /src/Core/Checkout/Payment/")
+    Component(customer_service, "Customer Service", "Domain Service", "Customer management and authentication\nLocation: /src/Core/Checkout/Customer/")
+    Component(shipping_service, "Shipping Service", "Domain Service", "Delivery calculations and methods\nLocation: /src/Core/Checkout/Shipping/")
+
+    ' Content Domain Components
+    Component(product_service, "Product Service", "Domain Service", "Product catalog and variant management\nLocation: /src/Core/Content/Product/")
+    Component(category_service, "Category Service", "Domain Service", "Category hierarchy and navigation\nLocation: /src/Core/Content/Category/")
+    Component(cms_service, "CMS Service", "Domain Service", "Content management and page rendering\nLocation: /src/Core/Content/Cms/")
+    Component(media_service, "Media Service", "Domain Service", "File management and processing\nLocation: /src/Core/Content/Media/")
+    Component(seo_service, "SEO Service", "Domain Service", "URL generation and optimization\nLocation: /src/Core/Content/Seo/")
+    Component(rule_service, "Rule Service", "Domain Service", "Business rule management\nLocation: /src/Core/Content/Rule/")
+
+    ' System Domain Components
+    Component(config_service, "Configuration Service", "Domain Service", "System settings and configuration\nLocation: /src/Core/System/SystemConfig/")
+    Component(user_service, "User Service", "Domain Service", "Admin user management\nLocation: /src/Core/System/User/")
+    Component(language_service, "Language Service", "Domain Service", "Multi-language support\nLocation: /src/Core/System/Language/")
+    Component(currency_service, "Currency Service", "Domain Service", "Multi-currency handling\nLocation: /src/Core/System/Currency/")
+    Component(country_service, "Country Service", "Domain Service", "Geographic data management\nLocation: /src/Core/System/Country/")
+    Component(tax_service, "Tax Service", "Domain Service", "Tax calculation and management\nLocation: /src/Core/System/Tax/")
+
+    ' Framework Layer Components
+    Component(entity_repository, "Entity Repository", "Repository Pattern", "Generic CRUD operations with DAL\nLocation: /src/Core/Framework/DataAbstractionLayer/EntityRepository.php")
+    Component(entity_definition, "Entity Definition", "Schema Definition", "Entity schema and field definitions\nLocation: /src/Core/Framework/DataAbstractionLayer/EntityDefinition.php")
+    Component(dal_reader, "DAL Reader", "Data Access", "Optimized database read operations\nLocation: /src/Core/Framework/DataAbstractionLayer/Read/")
+    Component(dal_writer, "DAL Writer", "Data Access", "Database write operations\nLocation: /src/Core/Framework/DataAbstractionLayer/Write/")
+    Component(version_manager, "Version Manager", "Versioning", "Entity versioning and drafts\nLocation: /src/Core/Framework/DataAbstractionLayer/Version/")
+    Component(migration_system, "Migration System", "Schema Management", "Database schema evolution\nLocation: /src/Core/Framework/Migration/")
+
+    ' Event System Components
+    Component(event_dispatcher, "Event Dispatcher", "Event System", "Business event dispatching\nLocation: /src/Core/Framework/Event/EventDispatcher.php")
+    Component(business_events, "Business Events", "Event Registry", "Business event definitions\nLocation: /src/Core/Framework/Event/BusinessEvents.php")
+    Component(webhook_dispatcher, "Webhook Dispatcher", "Integration", "External webhook notifications\nLocation: /src/Core/Framework/Webhook/")
+    Component(flow_builder, "Flow Builder", "Workflow Engine", "Visual workflow automation\nLocation: /src/Core/Content/Flow/")
+
+    ' Rule Engine Components
+    Component(rule_engine, "Rule Engine", "Business Rules", "Rule evaluation and matching\nLocation: /src/Core/Framework/Rule/")
+    Component(rule_matcher, "Rule Matcher", "Rule Processing", "Rule condition evaluation\nLocation: /src/Core/Framework/Rule/RuleMatcher.php")
+
+    ' Extension System Components
+    Component(plugin_manager, "Plugin Manager", "Extension System", "Plugin lifecycle management\nLocation: /src/Core/Framework/Plugin/")
+    Component(app_system, "App System", "Extension Platform", "Lightweight app integration\nLocation: /src/Core/Framework/App/")
+    Component(hook_system, "Hook System", "Extension Points", "Customization hooks\nLocation: /src/Core/Framework/Script/")
+
+    ' Integration Components
+    Component(cache_manager, "Cache Manager", "Cache Layer", "Multi-level caching system\nLocation: /src/Core/Framework/Cache/")
+    Component(search_integration, "Search Integration", "Search Service", "Elasticsearch integration\nLocation: /src/Elasticsearch/")
+    Component(message_publisher, "Message Publisher", "Async Processing", "Message queue publishing\nLocation: /src/Core/Framework/MessageQueue/")
+    Component(import_export, "Import/Export Service", "Data Integration", "Bulk data operations\nLocation: /src/Core/Content/ImportExport/")
+}
+
+' API Layer Interactions
+Rel(admin_app, admin_api_controller, "Management operations", "HTTPS/JSON")
+Rel(storefront_app, store_api_routes, "Customer operations", "HTTPS/JSON")
+
+Rel(admin_api_controller, auth_service, "Authenticate", "Internal")
+Rel(store_api_routes, auth_service, "Validate tokens", "Internal")
+Rel(admin_api_controller, context_factory, "Create context", "Internal")
+Rel(store_api_routes, context_factory, "Create context", "Internal")
+
+' Checkout Domain Interactions
+Rel(admin_api_controller, cart_service, "Cart operations", "Internal")
+Rel(store_api_routes, cart_service, "Customer cart", "Internal")
+Rel(admin_api_controller, order_service, "Order management", "Internal")
+Rel(store_api_routes, order_service, "Place orders", "Internal")
+Rel(admin_api_controller, customer_service, "Customer CRUD", "Internal")
+Rel(store_api_routes, customer_service, "Customer account", "Internal")
+
+Rel(cart_service, payment_service, "Payment methods", "Internal")
+Rel(cart_service, shipping_service, "Shipping costs", "Internal")
+Rel(order_service, payment_service, "Process payments", "Internal")
+Rel(order_service, customer_service, "Customer data", "Internal")
+
+' Content Domain Interactions
+Rel(admin_api_controller, product_service, "Product CRUD", "Internal")
+Rel(store_api_routes, product_service, "Product catalog", "Internal")
+Rel(cart_service, product_service, "Product info", "Internal")
+Rel(cms_service, media_service, "Content media", "Internal")
+Rel(product_service, category_service, "Categories", "Internal")
+Rel(seo_service, product_service, "SEO URLs", "Internal")
+
+' System Domain Interactions
+Rel(admin_api_controller, config_service, "System config", "Internal")
+Rel(admin_api_controller, user_service, "User management", "Internal")
+Rel(context_factory, language_service, "Language context", "Internal")
+Rel(context_factory, currency_service, "Currency context", "Internal")
+Rel(cart_service, tax_service, "Tax calculation", "Internal")
+
+' Framework Layer Dependencies
+Rel(cart_service, entity_repository, "Data persistence", "Internal")
+Rel(order_service, entity_repository, "Order data", "Internal")
+Rel(product_service, entity_repository, "Product data", "Internal")
+Rel(customer_service, entity_repository, "Customer data", "Internal")
+
+Rel(entity_repository, entity_definition, "Schema info", "Internal")
+Rel(entity_repository, dal_reader, "Read operations", "Internal")
+Rel(entity_repository, dal_writer, "Write operations", "Internal")
+Rel(dal_writer, version_manager, "Versioning", "Internal")
+Rel(entity_definition, migration_system, "Schema changes", "Internal")
+
+' Event System Flow
+Rel(dal_writer, event_dispatcher, "Entity events", "Internal")
+Rel(order_service, event_dispatcher, "Order events", "Internal")
+Rel(customer_service, event_dispatcher, "Customer events", "Internal")
+Rel(event_dispatcher, business_events, "Event registry", "Internal")
+Rel(event_dispatcher, webhook_dispatcher, "External events", "Internal")
+Rel(event_dispatcher, flow_builder, "Workflow triggers", "Internal")
+
+' Rule Engine Integration
+Rel(cart_service, rule_engine, "Cart rules", "Internal")
+Rel(payment_service, rule_engine, "Payment rules", "Internal")
+Rel(shipping_service, rule_engine, "Shipping rules", "Internal")
+Rel(rule_engine, rule_matcher, "Rule evaluation", "Internal")
+Rel(rule_service, rule_engine, "Rule management", "Internal")
+
+' Extension System
+Rel(plugin_manager, hook_system, "Plugin hooks", "Internal")
+Rel(app_system, webhook_dispatcher, "App webhooks", "Internal")
+Rel(hook_system, cms_service, "Template hooks", "Internal")
+
+' Infrastructure Integration
+Rel(entity_repository, cache_manager, "Entity caching", "Internal")
+Rel(product_service, search_integration, "Product indexing", "Internal")
+Rel(event_dispatcher, message_publisher, "Async events", "Internal")
+Rel(admin_api_controller, import_export, "Bulk operations", "Internal")
+
+' External Dependencies
+Rel(dal_reader, database, "Read queries", "MySQL Protocol")
+Rel(dal_writer, database, "Write operations", "MySQL Protocol")
+Rel(cache_manager, cache_system, "Cache operations", "Redis/Filesystem")
+Rel(search_integration, search_engine, "Search operations", "HTTP/REST")
+Rel(message_publisher, message_queue, "Queue messages", "Internal")
+Rel(media_service, file_storage, "File operations", "Filesystem/S3")
+
+Rel(payment_service, payment_gateway, "Payment processing", "HTTPS/API")
+Rel(shipping_service, shipping_provider, "Shipping calculations", "HTTPS/API")
+Rel(webhook_dispatcher, external_systems, "Business events", "HTTPS/Webhooks")
+Rel(import_export, email_service, "Notification emails", "SMTP")
+
+' Layout positioning
+Lay_D(admin_app, admin_api_controller)
+Lay_D(storefront_app, store_api_routes)
+Lay_D(admin_api_controller, cart_service)
+Lay_R(cart_service, order_service)
+Lay_R(order_service, payment_service)
+Lay_D(cart_service, entity_repository)
+Lay_D(entity_repository, database)
+Lay_R(entity_repository, event_dispatcher)
+Lay_R(event_dispatcher, rule_engine)
+
+@enduml
