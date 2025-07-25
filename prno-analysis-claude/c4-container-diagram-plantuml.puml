@@ -1,0 +1,101 @@
+@startuml Shopware-Container-Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Container diagram for Shopware E-Commerce Platform
+
+' External Users/Personas
+Person(customer, "Customer", "End user shopping online")
+Person(guest, "Guest User", "Anonymous visitor")
+Person(merchant, "Store Manager", "Manages store operations")
+Person(admin, "System Administrator", "System configuration")
+Person(editor, "Content Editor", "Content management")
+Person(support, "Customer Service", "Customer support")
+
+' System Boundary
+System_Boundary(shopware, "Shopware E-Commerce Platform") {
+
+    ' Frontend Containers
+    Container(admin_app, "Administration App", "Vue.js 3, TypeScript, Vite", "Admin interface for store management with role-based access control, dashboard, and business operations")
+
+    Container(storefront_app, "Storefront App", "PHP/Twig, Bootstrap 5, JavaScript", "Server-rendered customer-facing e-commerce interface with shopping cart, checkout, and account management")
+
+    ' Backend Containers
+    Container(core_api, "Core Backend API", "Symfony 7, PHP 8.2+", "Business logic engine with Admin API (/api/*) and Store API (/store-api/*) providing all e-commerce functionality")
+
+    ' Data Storage Containers
+    ContainerDb(database, "Primary Database", "MySQL/MariaDB", "Stores all business data: products, orders, customers, content, configuration with multi-language support")
+
+    Container(search_engine, "Search Engine", "Elasticsearch/OpenSearch", "Product search indexing, full-text search, faceted filtering, and search analytics")
+
+    Container(cache_system, "Cache System", "Filesystem/Redis", "Performance optimization with object cache, HTTP cache, and tag-based invalidation")
+
+    Container(file_storage, "File Storage", "Filesystem/S3", "Media files, product images, documents, theme assets, and user uploads")
+
+    ' Background Processing
+    Container(message_queue, "Message Queue", "Symfony Messenger", "Asynchronous processing for search indexing, email sending, and background tasks")
+}
+
+' External Systems
+System_Ext(payment_gateway, "Payment Providers", "Payment processing services")
+System_Ext(shipping_provider, "Shipping Providers", "Logistics and delivery services")
+System_Ext(email_service, "Email Service", "SMTP servers")
+System_Ext(cdn, "CDN/Media Services", "Content delivery network")
+System_Ext(erp_system, "ERP/PIM Systems", "Enterprise systems")
+System_Ext(analytics, "Analytics Services", "Web analytics")
+System_Ext(external_systems, "External Systems", "Third-party integrations")
+
+' User Interactions
+Rel(customer, storefront_app, "Browses, shops, manages account", "HTTPS")
+Rel(guest, storefront_app, "Browses, makes purchases", "HTTPS")
+
+Rel(merchant, admin_app, "Manages products, orders, customers", "HTTPS")
+Rel(admin, admin_app, "System configuration, monitoring", "HTTPS")
+Rel(editor, admin_app, "Content and media management", "HTTPS")
+Rel(support, admin_app, "Customer service operations", "HTTPS")
+
+' Frontend to Backend Communication
+Rel(admin_app, core_api, "Management operations", "HTTPS/Admin API (JSON)")
+Rel(storefront_app, core_api, "Business operations", "HTTPS/Store API (JSON)")
+
+' Backend to Data Storage
+Rel(core_api, database, "CRUD operations", "MySQL Protocol/DAL")
+Rel(core_api, search_engine, "Index products, search queries", "HTTP/REST API")
+Rel(core_api, cache_system, "Cache operations", "Filesystem/Redis Protocol")
+Rel(core_api, file_storage, "File operations", "Filesystem/S3 API")
+
+' Async Processing
+Rel(core_api, message_queue, "Queue messages", "Internal")
+Rel(message_queue, search_engine, "Async indexing", "HTTP/REST API")
+Rel(message_queue, email_service, "Send emails", "SMTP")
+
+' Search Engine Data
+Rel(search_engine, database, "Index data synchronization", "MySQL Protocol")
+
+' External Integrations
+Rel(core_api, payment_gateway, "Payment processing", "HTTPS/REST API")
+Rel(payment_gateway, core_api, "Payment status updates", "HTTPS/Webhooks")
+
+Rel(core_api, shipping_provider, "Shipping calculations", "HTTPS/REST API")
+Rel(shipping_provider, core_api, "Delivery updates", "HTTPS/Webhooks")
+
+Rel(core_api, email_service, "Transactional emails", "SMTP")
+Rel(core_api, cdn, "Media delivery", "HTTPS/REST API")
+
+Rel(erp_system, core_api, "Data synchronization", "HTTPS/REST API")
+Rel(core_api, external_systems, "Business events", "HTTPS/Webhooks")
+Rel(core_api, analytics, "Tracking data", "HTTPS/Analytics API")
+
+' Layout positioning
+Lay_D(customer, storefront_app)
+Lay_D(merchant, admin_app)
+Lay_D(admin_app, core_api)
+Lay_D(storefront_app, core_api)
+Lay_D(core_api, database)
+Lay_R(database, search_engine)
+Lay_R(search_engine, cache_system)
+Lay_R(cache_system, file_storage)
+Lay_U(message_queue, core_api)
+
+@enduml
