@@ -8,6 +8,7 @@ This document contains the C4 Context diagram for the Shopware e-commerce platfo
 C4Context
     title Shopware E-Commerce Platform - System Context
 
+    %% Users positioned around the center
     Person(customer, "Customer", "End user shopping online, browsing products, placing orders")
     Person(guest, "Guest User", "Anonymous visitor browsing products without account")
     Person(merchant, "Store Manager/Merchant", "Manages products, orders, customers, and store operations")
@@ -15,10 +16,12 @@ C4Context
     Person(editor, "Content Editor", "Creates and manages CMS content, media, SEO content")
     Person(support, "Customer Service", "Handles customer inquiries, processes returns/refunds")
 
+    %% Central system
     System_Boundary(shopware, "Shopware E-Commerce Platform") {
         System(core, "Shopware Core", "E-commerce engine with product catalog, order management, customer management, and business logic")
     }
 
+    %% External systems positioned around the center
     System_Ext(payment_gateway, "Payment Providers", "External payment processing (Stripe, PayPal, etc.)")
     System_Ext(shipping_provider, "Shipping Providers", "Delivery services (DHL, UPS, FedEx, etc.)")
     System_Ext(email_service, "Email Service", "SMTP servers for transactional and marketing emails")
@@ -29,17 +32,17 @@ C4Context
     System_Ext(marketplace, "App Marketplace", "Third-party apps and extensions ecosystem")
     System_Ext(webhook_consumers, "External Systems", "Third-party systems consuming Shopware business events")
 
-    %% Customer interactions
+    %% Customer interactions from top
     Rel(customer, core, "Browses products, places orders, manages account", "HTTPS/Store API")
     Rel(guest, core, "Browses products, makes purchases", "HTTPS/Store API")
 
-    %% Internal user interactions
+    %% Internal user interactions from left side
     Rel(merchant, core, "Manages store operations", "HTTPS/Admin API")
     Rel(admin, core, "System configuration and monitoring", "HTTPS/Admin API")
     Rel(editor, core, "Content and media management", "HTTPS/Admin API")
     Rel(support, core, "Customer service operations", "HTTPS/Admin API")
 
-    %% External system integrations
+    %% External system integrations - positioned radially around core
     Rel(core, payment_gateway, "Processes payments, handles refunds", "HTTPS/API")
     Rel(payment_gateway, core, "Payment status updates", "Webhooks")
     
@@ -62,10 +65,23 @@ C4Context
     
     Rel(core, webhook_consumers, "Business events (orders, customers)", "HTTPS/Webhooks")
 
-    UpdateRelStyle(customer, core, $offsetY="-30")
-    UpdateRelStyle(guest, core, $offsetY="-20")
-    UpdateRelStyle(merchant, core, $offsetY="20")
-    UpdateRelStyle(admin, core, $offsetY="30")
+    %% Layout positioning to center Shopware Core
+    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
+    UpdateRelStyle(customer, core, $offsetY="-40", $offsetX="0")
+    UpdateRelStyle(guest, core, $offsetY="-40", $offsetX="20")
+    UpdateRelStyle(merchant, core, $offsetX="-40", $offsetY="-10")
+    UpdateRelStyle(admin, core, $offsetX="-40", $offsetY="0")
+    UpdateRelStyle(editor, core, $offsetX="-40", $offsetY="10")
+    UpdateRelStyle(support, core, $offsetX="-40", $offsetY="20")
+    UpdateRelStyle(core, payment_gateway, $offsetX="40", $offsetY="-30")
+    UpdateRelStyle(core, shipping_provider, $offsetX="40", $offsetY="-10")
+    UpdateRelStyle(core, email_service, $offsetX="0", $offsetY="40")
+    UpdateRelStyle(core, search_engine, $offsetX="30", $offsetY="30")
+    UpdateRelStyle(erp_system, core, $offsetX="-30", $offsetY="30")
+    UpdateRelStyle(core, analytics, $offsetX="20", $offsetY="40")
+    UpdateRelStyle(core, cdn, $offsetX="40", $offsetY="10")
+    UpdateRelStyle(marketplace, core, $offsetX="-20", $offsetY="40")
+    UpdateRelStyle(core, webhook_consumers, $offsetX="40", $offsetY="30")
 ```
 
 ## System Context Elements
