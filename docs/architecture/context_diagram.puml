@@ -1,0 +1,35 @@
+@startuml ContextDiagram
+!include ../C4.puml
+!include ../C4_Context.puml
+
+title Shopware Platform – Context Diagram
+
+Person(admin, "Administrator", "Shopware backend user")
+Person(shopper, "Customer", "Online shopper")
+
+System_Boundary(platform, "Shopware Platform") {
+  Container(administration, "Administration", "Symfony App", "Backend management interface")
+  Container(core,           "Core",           "PHP/Symfony",     "Business logic & services")
+  Container(elasticsearch,  "Elasticsearch",  "Elasticsearch",   "Search backend integration")
+  Container(storefront,     "Storefront",     "Twig/Vue.js",     "Public-facing storefront")
+}
+
+Rel(admin, administration, "Uses", "HTTPS/REST")
+Rel(shopper, storefront,    "Browses & Purchases", "HTTPS/HTML, JS")
+
+Rel(storefront, core,         "Reads/Writes via API", "HTTPS/JSON")
+Rel(administration, core,     "Reads/Writes via API", "HTTPS/JSON")
+Rel(core, elasticsearch,      "Indexes & Searches",   "HTTP/JSON")
+
+Deployment_Node(webserver, "Web Server", "Runs Administration & Storefront") {
+  Container(administration)
+  Container(storefront)
+}
+Deployment_Node(appserver, "App Server", "Runs Core Services") {
+  Container(core)
+}
+Deployment_Node(searchcluster, "Elasticsearch Cluster", "Search infrastructure") {
+  Container(elasticsearch)
+}
+
+@enduml
