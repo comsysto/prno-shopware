@@ -21,6 +21,20 @@ note right of Administration
   Backend management interface (commands, controllers, dashboard, notifications, etc.)
 end note
 
+  ' notes for each Administration subcomponent
+note right of Command : CLI commands for administrative tasks
+note right of Controller : HTTP controllers for admin interfaces
+note right of Dashboard : UI panels for monitoring and management
+note right of DependencyInjection : Service definitions and wiring
+note right of Events : Event handlers for administration workflows
+note right of Framework : Shared utilities for admin modules
+note right of Migration : Database migrations for admin features
+note right of Notification : Alerts and notification mechanisms
+note right of Resources : Templates, assets, and static resources
+note right of Service : Core business logic for administrative tasks
+note right of Snippet : Reusable template snippets in the admin UI
+note right of System : System-level utilities and health checks
+
 component Core {
   component Checkout
   component Content
@@ -38,6 +52,19 @@ note right of Core
   Fundamental business logic and services (checkout, content, system, etc.)
 end note
 
+  ' notes for each Core subcomponent
+note right of Checkout : Core checkout processes and payment handling
+note right of Content : Content management and rendering services
+note right of DevOps : DevOps tooling and system automation
+note right of Framework : Core framework utilities and abstractions
+note right of Installer : Installation and setup routines
+note right of Maintenance : Scheduled maintenance and cleanup tasks
+note right of Migration : Core database migrations
+note right of Profiling : Performance profiling and analysis tools
+note right of Service : Core business logic services
+note right of System : System utilities and health checks
+note right of Test : Core testing utilities and infrastructure
+
 component Elasticsearch {
   component Admin
   component DependencyInjection
@@ -53,6 +80,18 @@ component Elasticsearch {
 note right of Elasticsearch
   Search backend integration (indices, product data, sorting, profiling, etc.)
 end note
+
+  ' notes for each Elasticsearch subcomponent
+note right of Admin : Elasticsearch index administration and config
+note right of DependencyInjection : DI configuration for search integration
+note right of Event : Elasticsearch-specific event listeners
+note right of Framework : Shared framework utilities for search modules
+note right of Migration : Elasticsearch index migrations and upgrades
+note right of Product : Product indexing and search model definitions
+note right of Profiler : Query profiling integration with Elasticsearch
+note right of Resources : Resource definitions for search assets
+note right of Sort : Sorting algorithms and ranking criteria
+note right of Test : Testing utilities and fixtures for search backend
 
 component Storefront {
   component Checkout
@@ -70,6 +109,19 @@ component Storefront {
 note right of Storefront
   Public-facing UI and page rendering (controllers, pages, themes, checkout, etc.)
 end note
+
+  ' notes for each Storefront subcomponent
+note right of Checkout : Storefront checkout UI and workflow
+note right of Controller : HTTP controllers for storefront pages
+note right of DependencyInjection : DI configuration for storefront modules
+note right of Event : Storefront event listeners and dispatchers
+note right of Framework : Shared frontend framework abstractions
+note right of Migration : Storefront database migrations
+note right of Page : Page controllers and templates
+note right of Pagelet : Reusable UI components (pagelets)
+note right of Resources : Static assets and templates for storefront
+note right of Test : Frontend and integration testing utilities
+note right of Theme : Theming and styling configurations
 
 legend right
   |== Component ==| Root level subsystems |
