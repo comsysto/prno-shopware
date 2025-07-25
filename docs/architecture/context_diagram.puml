@@ -1,6 +1,8 @@
 @startuml ContextDiagram
 !include ../C4.puml
 !include ../C4_Context.puml
+!include ../C4_Container.puml
+!include ../C4_Deployment.puml
 
 title Shopware Platform – Context Diagram
 
@@ -20,16 +22,4 @@ Rel(shopper, storefront,    "Browses & Purchases", "HTTPS/HTML, JS")
 Rel(storefront, core,         "Reads/Writes via API", "HTTPS/JSON")
 Rel(administration, core,     "Reads/Writes via API", "HTTPS/JSON")
 Rel(core, elasticsearch,      "Indexes & Searches",   "HTTP/JSON")
-
-Deployment_Node(webserver, "Web Server", "Runs Administration & Storefront") {
-  Container(administration)
-  Container(storefront)
-}
-Deployment_Node(appserver, "App Server", "Runs Core Services") {
-  Container(core)
-}
-Deployment_Node(searchcluster, "Elasticsearch Cluster", "Search infrastructure") {
-  Container(elasticsearch)
-}
-
 @enduml
