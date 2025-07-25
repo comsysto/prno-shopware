@@ -1,0 +1,79 @@
+@startuml ComponentDiagram
+skinparam componentStyle rectangle
+
+title Main components of the system, representing the 4 subfolders. Component Diagram: Overview of core subsystems.
+
+component Administration {
+  component Command
+  component Controller
+  component Dashboard
+  component DependencyInjection
+  component Events
+  component Framework
+  component Migration
+  component Notification
+  component Resources
+  component Service
+  component Snippet
+  component System
+}
+note right of Administration
+  Backend management interface (commands, controllers, dashboard, notifications, etc.)
+end note
+
+component Core {
+  component Checkout
+  component Content
+  component DevOps
+  component Framework
+  component Installer
+  component Maintenance
+  component Migration
+  component Profiling
+  component Service
+  component System
+  component Test
+}
+note right of Core
+  Fundamental business logic and services (checkout, content, system, etc.)
+end note
+
+component Elasticsearch {
+  component Admin
+  component DependencyInjection
+  component Event
+  component Framework
+  component Migration
+  component Product
+  component Profiler
+  component Resources
+  component Sort
+  component Test
+}
+note right of Elasticsearch
+  Search backend integration (indices, product data, sorting, profiling, etc.)
+end note
+
+component Storefront {
+  component Checkout
+  component Controller
+  component DependencyInjection
+  component Event
+  component Framework
+  component Migration
+  component Page
+  component Pagelet
+  component Resources
+  component Test
+  component Theme
+}
+note right of Storefront
+  Public-facing UI and page rendering (controllers, pages, themes, checkout, etc.)
+end note
+
+legend right
+  |== Component ==| Root level subsystems |
+  |-- Subcomponent --| Direct subfolders |
+endlegend
+
+@enduml

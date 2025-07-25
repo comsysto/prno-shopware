@@ -1,0 +1,5 @@
+User: Modify the PlantUML diagram in docs/architecture and show all the comments as notes in the diagram that are lined to the respective components.
+Assistant: Updated docs/architecture/component_diagram.puml to convert all comment blocks into visible notes linked to their respective components.
+User: Where can I find a log of my last session with codex?
+Assistant: Explained that OpenAI Chat UI history, API/CLI logging, or IDE extension transcripts are the places to look; no automatic on‑disk log by default.
+User: Write the output of the current session to docs/codex/session-2.log
