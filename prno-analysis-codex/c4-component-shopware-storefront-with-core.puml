@@ -1,0 +1,112 @@
+@startuml C4_Component_Shopware_StorefrontWithCore
+'-------------------------------------------------------------------------------'
+' C4-PlantUML setup (requires https://github.com/plantuml-stdlib/C4-PlantUML)
+'-------------------------------------------------------------------------------'
+!define RELATIVE_INCLUDE
+!include ./C4P/C4_Container.puml
+!include ./C4P/C4_Component.puml
+
+'-------------------------------------------------------------------------------'
+' Container boundary for Storefront
+'-------------------------------------------------------------------------------'
+Container_Boundary(storefront, "Storefront", "PHP, Twig, Symfony") {
+  Component(storefrontBundle, "Storefront Bundle", "Defines storefront bundle & compiler passes", "src/Storefront/Storefront.php")
+  Component(diComp,            "Dependency Injection",         "Loads service definitions & DI configuration", "src/Storefront/DependencyInjection")
+  Component(controllerComp,    "Controller Layer",             "Handles HTTP requests and maps to page loaders", "src/Storefront/Controller")
+  Component(checkoutComp,      "Checkout Features",            "Checkout pages, cart & payment logic",          "src/Storefront/Checkout")
+  Component(pageComp,          "Page Loader",                  "Loads page data and creates page objects",     "src/Storefront/Page")
+  Component(pageletComp,       "Pagelet Loader",               "Loads individual pagelets asynchronously",      "src/Storefront/Pagelet")
+  Component(eventComp,         "Event System",                 "Defines storefront events and listeners",      "src/Storefront/Event")
+  Component(frameworkComp,     "Framework Utilities",          "Core classes and interfaces for storefront",   "src/Storefront/Framework")
+  Component(themeComp,         "Theme Integration",            "Manages theme inheritance and asset builds",  "src/Storefront/Theme")
+  Component(resourcesComp,     "Resources",                    "Twig templates, JS, CSS and static assets",   "src/Storefront/Resources")
+  Component(migrationComp,     "Database Migrations",          "Migration files for storefront schema changes", "src/Storefront/Migration")
+}
+
+'-------------------------------------------------------------------------------'
+' Container boundary for Core Backend API components
+'-------------------------------------------------------------------------------'
+Container_Boundary(coreBackendApi, "Core Backend API", "PHP, Symfony") {
+  Component(apiKernel,        "API Kernel",                         "Handles HTTP requests, routing & middleware",          "src/Kernel.php")
+  Component(securityComp,     "Security & Permissions",             "Authentication, authorization, and ACL enforcement",   "src/Core/Framework/Api/AuthController.php\nsrc/Core/Framework/Api/Acl")
+  Component(integrationComp,  "Integration Management",             "Manages external integrations and API access keys",    "src/Core/Framework/Api/Controller/IntegrationController.php\nsrc/Core/Framework/Api/Controller/AccessKeyController.php")
+  Component(featureComp,      "System Configuration & Feature Flags","Manages settings and feature toggles",                 "src/Core/Framework/Api/Controller/FeatureFlagController.php\nsrc/Administration/Controller/UserConfigController.php")
+  Component(scriptComp,       "Script API",                         "Executes and manages scripts",                         "src/Core/Framework/Script/Api")
+  Component(notificationComp, "Notification Service",               "Publishes and retrieves system notifications",         "src/Core/Framework/Notification")
+  Component(syncComp,         "Sync & Event Streaming",             "Handles synchronization endpoints for bulk operations","src/Core/Framework/Api/SyncController.php")
+  Component(dalComp,          "Data Abstraction Layer",             "Generic data access layer and repositories",           "src/Core/Framework/DataAbstractionLayer")
+  Component(pluginComp,       "Plugin System",                      "Loads and integrates plugins at runtime",              "src/Core/Framework/Plugin")
+  Component(productComp,      "Product Management",                 "CRUD operations for products and streams",             "src/Core/Content/Product\nsrc/Administration/Controller/AdminProductStreamController.php")
+  Component(cartComp,         "Cart & Checkout Management",         "Manages shopping cart & order placement",              "src/Core/Checkout")
+  Component(orderComp,        "Order Management",                   "Processes and tracks customer orders",                 "src/Core/Checkout/Order")
+  Component(customerComp,     "Customer Management",                "Manages customer data and storefront assignments",     "src/Core/Checkout/Customer")
+  Component(promotionComp,    "Promotion Management",               "Manages promotions and discount rules",                "src/Core/Checkout/Promotion")
+  Component(searchComp,       "Search Integration",                 "Indexes and queries products",                         "src/Elasticsearch\nsrc/Administration/Controller/AdminSearchController.php")
+  Component(mediaComp,        "Media Management",                   "Stores and serves media assets",                       "src/Core/Content/Media")
+}
+
+'-------------------------------------------------------------------------------'
+' Component relationships and flow
+'-------------------------------------------------------------------------------'
+' Storefront
+Rel(storefrontBundle, diComp,        "Registers services & compiler passes",      "Symfony DI")
+Rel(storefrontBundle, frameworkComp, "Provides theme interface implementation",   "PHP")
+Rel(storefrontBundle, migrationComp, "Registers migrations",                     "Doctrine Migrations")
+
+Rel(controllerComp,    pageComp,        "Delegates page requests to",               "PHP")
+Rel(controllerComp,    pageletComp,     "Delegates pagelet requests to",            "PHP")
+Rel(controllerComp,    checkoutComp,    "Handles checkout-related routes",          "Symfony HTTP")
+
+Rel(pageComp,          eventComp,       "Dispatches storefront lifecycle events",    "Symfony EventDispatcher")
+Rel(pageComp,          frameworkComp,   "Uses framework utilities",                 "PHP")
+Rel(pageComp,          resourcesComp,   "Renders pages via Twig templates",         "Twig")
+
+Rel(pageletComp,       resourcesComp,   "Renders pagelets via Twig templates",      "Twig")
+Rel(pageletComp,       eventComp,       "Dispatches storefront events",              "Symfony EventDispatcher")
+
+Rel(checkoutComp,      pageComp,        "Loads checkout-specific page data",        "PHP")
+Rel(checkoutComp,      frameworkComp,   "Uses framework utilities",                 "PHP")
+
+Rel(themeComp,         resourcesComp,   "Loads and compiles theme assets/templates", "Filesystem & Webpack")
+
+' Core Backend API
+Rel(apiKernel, securityComp,    "Authenticates and authorizes requests",    "Symfony HTTP + Token")
+Rel(apiKernel, integrationComp, "Routes integration requests to",            "Symfony HTTP")
+Rel(apiKernel, featureComp,     "Routes configuration requests to",          "Symfony HTTP")
+Rel(apiKernel, scriptComp,      "Routes script execution requests to",       "Symfony HTTP")
+Rel(apiKernel, notificationComp,"Routes notification requests to",           "Symfony HTTP")
+Rel(apiKernel, syncComp,        "Routes sync requests to",                  "Symfony HTTP")
+Rel(apiKernel, productComp,     "Routes product management requests to",     "Symfony HTTP")
+Rel(apiKernel, cartComp,        "Routes cart & checkout requests to",        "Symfony HTTP")
+Rel(apiKernel, orderComp,       "Routes order management requests to",      "Symfony HTTP")
+Rel(apiKernel, customerComp,    "Routes customer management requests to",   "Symfony HTTP")
+Rel(apiKernel, promotionComp,   "Routes promotion requests to",              "Symfony HTTP")
+Rel(apiKernel, searchComp,      "Forwards search queries to",               "PHP client")
+Rel(apiKernel, mediaComp,       "Serves media via",                         "PHP filesystem/S3")
+
+Rel(productComp, dalComp,       "Loads/saves products via",                  "Repository pattern")
+Rel(cartComp, dalComp,          "Loads/saves carts via",                     "Repository pattern")
+Rel(orderComp, dalComp,         "Loads/saves orders via",                    "Repository pattern")
+Rel(customerComp, dalComp,      "Loads/saves customers via",                 "Repository pattern")
+Rel(promotionComp, dalComp,     "Loads/saves promotions via",                "Repository pattern")
+Rel(searchComp, dalComp,        "Fetches data for indexing & querying",      "Repository pattern")
+Rel(mediaComp, dalComp,         "Fetches metadata via",                      "Repository pattern")
+
+Rel(pluginComp, apiKernel,      "Extends kernel via",                        "Plugin hooks")
+
+' Storefront ↔ Core Backend API interactions
+Rel(controllerComp, apiKernel,      "Forwards API requests to",  "HTTP/JSON")
+Rel(pageComp,         productComp,   "Loads products via",        "PHP/DAL")
+Rel(pageComp,         searchComp,    "Searches products via",     "PHP/DAL")
+Rel(checkoutComp,     cartComp,      "Manages shopping cart via", "PHP/DAL")
+Rel(checkoutComp,     orderComp,     "Places orders via",         "PHP/DAL")
+Rel(checkoutComp,     promotionComp, "Validates promotions via",  "PHP/DAL")
+Rel(themeComp,        mediaComp,     "Loads media assets via",    "PHP/Filesystem")
+
+'-------------------------------------------------------------------------------'
+' Layout and legend
+'-------------------------------------------------------------------------------'
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

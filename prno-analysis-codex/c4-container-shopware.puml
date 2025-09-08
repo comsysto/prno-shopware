@@ -1,0 +1,63 @@
+@startuml C4_Container_Shopware
+'-----------------------------------------------------------------------------'
+' C4-PlantUML setup (you need https://github.com/plantuml-stdlib/C4-PlantUML)
+'-----------------------------------------------------------------------------
+!define RELATIVE_INCLUDE
+!include C4P/C4_Container.puml
+
+'-----------------------------------------------------------------------------'
+' Define system boundary and containers
+'-----------------------------------------------------------------------------
+System_Boundary(sw, "Shopware eCommerce Platform") {
+  Container(frontend,   "Storefront",              "PHP, Twig",                 "Renders storefront pages for customers")
+  Container(adminUI,    "Administration UI",       "Vue.js Single Page App",    "Management interface for products, orders, customers")
+  Container(adminApi,   "Admin API",               "PHP, Symfony",              "JSON API for administration UI and integrations")
+  Container(storeApi,   "Store API",               "PHP, Symfony",              "JSON API for storefront and headless sales channels")
+  Container(cli,        "CLI & Worker",           "PHP CLI, Symfony Messenger","Executes scheduled tasks and background jobs")
+
+  ContainerDb(database,  "Database",                "MySQL",                     "Stores products, orders, customers and configuration data")
+  Container(cache,      "Cache",                   "Redis",                     "Caches sessions, HTTP cache entries and other transient data")
+  Container(broker,     "Message Broker",          "RabbitMQ",                  "Handles asynchronous messages and events")
+  Container(search,     "Search Engine",           "Elasticsearch",             "Provides product search and recommendation functionality")
+  Container(storage,    "Media Storage",           "Filesystem / S3",           "Stores product images and other media assets")
+}
+
+'-----------------------------------------------------------------------------'
+' Define primary users
+'-----------------------------------------------------------------------------
+Person(customer, "Shopper / Customer", "End-user browsing and purchasing products")
+Person(admin,    "Shop Administrator", "Staff managing products, promotions and orders")
+
+'-----------------------------------------------------------------------------'
+' Relationships: Users ↔ Containers
+'-----------------------------------------------------------------------------
+Rel(customer, frontend, "Uses via browser")
+Rel(customer, storeApi, "Uses via headless API (mobile apps, PWA)")
+Rel(admin,    adminUI,  "Uses via browser")
+
+'-----------------------------------------------------------------------------'
+' Relationships: Container interactions
+'-----------------------------------------------------------------------------
+Rel(adminUI,    adminApi, "Calls API to manage data", "HTTPS/JSON")
+Rel(frontend,   storeApi, "Calls Store API to render store", "HTTPS/JSON")
+Rel(adminApi,   database, "Reads from and writes to", "JDBC/SQL")
+Rel(storeApi,   database, "Reads from and writes to", "JDBC/SQL")
+Rel(cli,        database, "Reads from and writes to", "JDBC/SQL")
+Rel(frontend,   cache,    "Reads from and writes to", "Redis protocol")
+Rel(adminApi,   cache,    "Reads from and writes to", "Redis protocol")
+Rel(storeApi,   cache,    "Reads from and writes to", "Redis protocol")
+Rel(adminApi,   broker,   "Publishes events to", "AMQP")
+Rel(storeApi,   broker,   "Publishes events to", "AMQP")
+Rel(cli,        broker,   "Consumes messages from", "AMQP")
+Rel(adminApi,   search,   "Updates indexes in", "Elasticsearch API")
+Rel(storeApi,   search,   "Queries indexes in", "Elasticsearch API")
+Rel(frontend,   storage,  "Reads/writes media from/to", "S3 API or filesystem")
+Rel(adminApi,   storage,  "Reads/writes media from/to", "S3 API or filesystem")
+
+'-----------------------------------------------------------------------------'
+' Layout and styling tweaks
+'-----------------------------------------------------------------------------
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

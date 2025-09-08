@@ -1,0 +1,50 @@
+@startuml C4_Component_CartService
+'-----------------------------------------------------------------------------'
+' C4-PlantUML setup (requires https://github.com/plantuml-stdlib/C4-PlantUML)
+'-------------------------------------------------------------------------------'
+!define RELATIVE_INCLUDE
+!include ./C4P/C4_Container.puml
+!include ./C4P/C4_Component.puml
+
+'-------------------------------------------------------------------------------'
+' Container boundary for Cart Service
+'-------------------------------------------------------------------------------'
+Container_Boundary(cartService, "Cart Service", "PHP, Symfony") {
+  Component(kernelComp,          "Cart Service Kernel",       "Handles HTTP requests, routing & middleware",          "src/Kernel.php")
+  Component(controllerComp,      "Cart Controller",           "Exposes REST API endpoints for cart operations",      "src/Controller/CartController.php")
+  Component(serviceComp,         "Cart Service",              "Business logic for cart manipulation and orchestration","src/Core/Checkout/Cart/SalesChannel/CartService.php")
+  Component(factoryComp,         "Cart Factory",              "Creates and initializes Cart instances",             "src/Core/Checkout/Cart/CartFactory.php")
+  Component(calculatorComp,      "Cart Calculator",           "Calculates pricing, taxes, totals and promotions",    "src/Core/Checkout/Cart/CartCalculator.php")
+  Component(persisterComp,       "Cart Persister",            "Persists and retrieves cart data to storage",        "src/Core/Checkout/Cart/AbstractCartPersister.php")
+  Component(loadRouteComp,       "Cart Load Route",           "Loads a cart by token through REST route",            "src/Core/Checkout/Cart/SalesChannel/AbstractCartLoadRoute.php")
+  Component(addRouteComp,        "Cart Item Add Route",       "Adds line items to a cart via REST route",           "src/Core/Checkout/Cart/SalesChannel/AbstractCartItemAddRoute.php")
+  Component(updateRouteComp,     "Cart Item Update Route",    "Updates line items in a cart via REST route",        "src/Core/Checkout/Cart/SalesChannel/AbstractCartItemUpdateRoute.php")
+  Component(removeRouteComp,     "Cart Item Remove Route",    "Removes line items from a cart via REST route",      "src/Core/Checkout/Cart/SalesChannel/AbstractCartItemRemoveRoute.php")
+  Component(orderRouteComp,      "Cart Order Route",          "Processes order placement from a cart via REST route","src/Core/Checkout/Cart/SalesChannel/AbstractCartOrderRoute.php")
+}
+
+'-------------------------------------------------------------------------------'
+' Component relationships
+'-------------------------------------------------------------------------------'
+Rel(kernelComp,      controllerComp,    "Routes requests to",                       "Symfony HTTP")
+Rel(controllerComp,  serviceComp,       "Invokes business logic on",                 "PHP method call")
+Rel(serviceComp,     factoryComp,       "Uses to create carts",                      "PHP method call")
+Rel(serviceComp,     calculatorComp,    "Uses to recalculate cart totals",          "PHP method call")
+Rel(serviceComp,     persisterComp,     "Uses to save and load cart data",           "PHP method call")
+Rel(serviceComp,     loadRouteComp,     "Uses to load persisted cart",               "PHP method call")
+Rel(serviceComp,     addRouteComp,      "Uses to add items to cart",                 "PHP method call")
+Rel(serviceComp,     updateRouteComp,   "Uses to update items in cart",              "PHP method call")
+Rel(serviceComp,     removeRouteComp,   "Uses to remove items from cart",            "PHP method call")
+Rel(serviceComp,     orderRouteComp,    "Uses to place order from cart",             "PHP method call")
+
+'-------------------------------------------------------------------------------'
+' External dependencies (shared infrastructure, see container diagram)
+'-------------------------------------------------------------------------------'
+Rel_L(cartService, database, "Reads from and writes to", "JDBC/SQL")
+Rel_L(cartService, cache,    "Reads from and writes to", "Redis protocol")
+Rel_L(cartService, queue,    "Publishes and consumes events", "AMQP")
+
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

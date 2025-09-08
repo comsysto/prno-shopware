@@ -1,0 +1,54 @@
+@startuml C4_Component_Shopware_StoreAPI
+'-----------------------------------------------------------------------------'
+' C4-PlantUML setup (you need https://github.com/plantuml-stdlib/C4-PlantUML)
+'-----------------------------------------------------------------------------
+!define RELATIVE_INCLUDE
+!include C4P/C4_Container.puml
+!include C4P/C4_Component.puml
+
+'-----------------------------------------------------------------------------'
+' Container boundary for Store API
+'-----------------------------------------------------------------------------
+Container_Boundary(storeApi, "Store API", "PHP, Symfony") {
+  Component(apiKernel,     "SalesChannel Kernel",       "Handles HTTP requests, routing & middleware", "src/Kernel.php")
+  Component(productComp,    "Product Catalog Component", "Provides product search and details",     "src/Core/Content/Product")
+  Component(cartComp,       "Cart & Checkout Component","Manages shopping cart & order placement","src/Core/Checkout")
+  Component(orderComp,      "Order Management Component","Processes and tracks customer orders",  "src/Core/Checkout/Order")
+  Component(customerComp,   "Customer Component",        "Manages customer data and profiles",      "src/Core/Checkout/Customer")
+  Component(searchComp,     "Search Integration",       "Indexes and queries products",            "src/Elasticsearch")
+  Component(mediaComp,      "Media Management",         "Stores and serves product media assets",   "src/Core/Content/Media")
+  Component(dalComp,        "Data Abstraction Layer",   "Generic data access layer and repositories","src/Core/Framework/DataAbstractionLayer")
+  Component(pluginComp,     "Plugin System",            "Loads and integrates plugins at runtime",  "src/Core/Framework/Plugin")
+}
+
+'-----------------------------------------------------------------------------'
+' External dependencies (from Container diagram)
+'-----------------------------------------------------------------------------
+Rel_L(storeApi, database,   "Reads from and writes to", "JDBC/SQL")
+Rel_L(storeApi, cache,      "Reads from and writes to", "Redis protocol")
+Rel_L(storeApi, broker,     "Publishes events to",       "AMQP")
+Rel_L(storeApi, search,     "Updates & queries indexes", "Elasticsearch API")
+Rel_L(storeApi, storage,    "Reads/writes media assets", "S3 API or filesystem")
+
+'-----------------------------------------------------------------------------'
+' Component relationships
+'-----------------------------------------------------------------------------
+Rel(apiKernel, productComp,  "Routes requests to",         "Symfony HTTP")
+Rel(apiKernel, cartComp,     "Routes requests to",         "Symfony HTTP")
+Rel(apiKernel, orderComp,    "Routes requests to",         "Symfony HTTP")
+Rel(apiKernel, customerComp, "Routes requests to",         "Symfony HTTP")
+Rel(apiKernel, searchComp,   "Forwards search queries to", "PHP client")
+Rel(apiKernel, mediaComp,    "Serves media via",           "PHP filesystem/S3")
+Rel(productComp, dalComp,     "Loads/saves products via",   "Repository pattern")
+Rel(cartComp,    dalComp,     "Loads/saves carts via",      "Repository pattern")
+Rel(orderComp,   dalComp,     "Loads/saves orders via",     "Repository pattern")
+Rel(customerComp,dalComp,     "Loads/saves customers via",  "Repository pattern")
+Rel(searchComp,  dalComp,     "Fetches data for indexing",  "Repository pattern")
+Rel(mediaComp,   dalComp,     "Fetches metadata via",       "Repository pattern")
+Rel(dalComp,     database,    "Reads/Writes data to",       "JDBC/SQL")
+Rel(pluginComp,  apiKernel,   "Extends kernel via",         "Plugin hooks")
+
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml
