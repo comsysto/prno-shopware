@@ -1,0 +1,86 @@
+@startuml C4_Code_CartService
+'-----------------------------------------------------------------------------'
+' C4-PlantUML code-level (class) diagram for Cart Service
+'-------------------------------------------------------------------------------'
+!define RELATIVE_INCLUDE
+!include ./C4P/C4_Container.puml
+!include ./C4P/C4_Component.puml
+
+'-----------------------------------------------------------------------------'
+' Code-level diagram inside Cart Service container
+'-------------------------------------------------------------------------------'
+Container_Boundary(cartService, "Cart Service", "PHP, Symfony") {
+  class CartService {
+    .. Business logic for cart operations, orchestrating cart persistence, calculation, and routes ..
+  }
+
+  class CartFactory {
+    .. Creates and initializes Cart instances ..
+  }
+  class CartCalculator {
+    .. Calculates pricing, taxes, totals and promotions ..
+  }
+  class AbstractCartPersister {
+    .. Persists and retrieves cart data to storage ..
+  }
+  class AbstractCartLoadRoute {
+    .. Loads a cart by token through REST route ..
+  }
+  class AbstractCartDeleteRoute {
+    .. Deletes a cart through REST route ..
+  }
+  class AbstractCartItemAddRoute {
+    .. Adds line items to a cart via REST route ..
+  }
+  class AbstractCartItemUpdateRoute {
+    .. Updates line items in a cart via REST route ..
+  }
+  class AbstractCartItemRemoveRoute {
+    .. Removes line items from a cart via REST route ..
+  }
+  class AbstractCartOrderRoute {
+    .. Processes order placement from a cart via REST route ..
+  }
+  class CartResponse {
+    .. Response returned after loading a cart ..
+  }
+  class CartOrderRouteResponse {
+    .. Response returned after placing an order ..
+  }
+  class Cart {
+    .. A customer's shopping cart, containing line items ..
+  }
+  class LineItem {
+    .. Represents a line item in the cart ..
+  }
+  class SalesChannelContext {
+    .. Context of the sales channel for request execution ..
+  }
+  class RequestDataBag {
+    .. Wrapper for request data parameters ..
+  }
+  class EventDispatcherInterface {
+    .. Publishes and dispatches events within the system ..
+  }
+
+  CartService --> AbstractCartPersister : "saves and loads cart data\nPHP method call"
+  CartService --> EventDispatcherInterface : "dispatches cart events\nPHP method call"
+  CartService --> CartCalculator : "recalculates cart totals\nPHP method call"
+  CartService --> AbstractCartLoadRoute : "loads cart via REST route\nPHP method call"
+  CartService --> AbstractCartDeleteRoute : "deletes cart via REST route\nPHP method call"
+  CartService --> AbstractCartItemAddRoute : "adds items via REST route\nPHP method call"
+  CartService --> AbstractCartItemUpdateRoute : "updates items via REST route\nPHP method call"
+  CartService --> AbstractCartItemRemoveRoute : "removes items via REST route\nPHP method call"
+  CartService --> AbstractCartOrderRoute : "places order via REST route\nPHP method call"
+  CartService --> CartFactory : "creates new carts\nPHP method call"
+  CartService --> Cart : "manages Cart instances"
+  CartService --> SalesChannelContext : "requires sales channel context"
+  CartService --> RequestDataBag : "accepts request data parameters"
+  CartService --> LineItem : "manipulates line items in cart"
+
+}
+
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml C4_Container_CartService
+'-----------------------------------------------------------------------------'
+' C4-PlantUML setup (you need https://github.com/plantuml-stdlib/C4-PlantUML)
+'-----------------------------------------------------------------------------'
+!define RELATIVE_INCLUDE
+!include C4P/C4_Container.puml
+
+'-----------------------------------------------------------------------------'
+' Container boundary for Cart Service
+'-----------------------------------------------------------------------------'
+System_Boundary(cs, "Cart Service") {
+  Container(api,    "Cart Service API", "PHP, Symfony", "Handles customer cart operations via REST API")
+  Container(worker, "Cart Worker",      "PHP CLI, Symfony Messenger", "Processes asynchronous cart events and promotions")
+  ContainerDb(db,   "Cart Database",    "MySQL", "Stores cart and line item data")
+  Container(cache,  "Cart Cache",       "Redis",  "Caches cart sessions and metadata")
+  ContainerQueue(queue, "Message Broker", "RabbitMQ", "Handles cart-related asynchronous messages")
+}
+
+'-----------------------------------------------------------------------------'
+' Define primary users and external systems
+'-----------------------------------------------------------------------------'
+Person(customer, "Shopper", "User browsing and managing items in their shopping cart")
+System_Ext(frontend, "Storefront Application", "Client application interacting with the cart service")
+
+'-----------------------------------------------------------------------------'
+' Relationships between user, systems and containers
+'-----------------------------------------------------------------------------'
+Rel(customer, api,    "Adds/removes items, views cart", "HTTPS/JSON")
+Rel(frontend, api,    "Calls cart operations API",           "HTTPS/JSON")
+
+Rel(api,      db,     "Reads from and writes to",            "JDBC/SQL")
+Rel(api,      cache,  "Reads from and writes to",            "Redis protocol")
+Rel(api,      queue,  "Publishes events to",                  "AMQP")
+
+Rel(worker,   queue,  "Consumes cart events from",           "AMQP")
+Rel(worker,   db,     "Reads from and writes to",            "JDBC/SQL")
+Rel(worker,   cache,  "Reads from and writes to",            "Redis protocol")
+
+'-----------------------------------------------------------------------------'
+' Layout and styling
+'-----------------------------------------------------------------------------'
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

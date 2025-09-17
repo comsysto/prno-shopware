@@ -1,0 +1,56 @@
+
+@startuml C4_Component_Shopware_Storefront
+'-------------------------------------------------------------------------------'
+' C4-PlantUML setup (requires https://github.com/plantuml-stdlib/C4-PlantUML)
+'-------------------------------------------------------------------------------'
+!define RELATIVE_INCLUDE
+!include ./C4P/C4_Container.puml
+!include ./C4P/C4_Component.puml
+
+'-------------------------------------------------------------------------------'
+' Container boundary for Storefront
+'-------------------------------------------------------------------------------'
+Container_Boundary(storefront, "Storefront", "PHP, Twig, Symfony") {
+  Component(storefrontBundle, "Storefront Bundle", "Defines storefront bundle & compiler passes", "src/Storefront/Storefront.php")
+  Component(diComp,            "Dependency Injection",         "Loads service definitions & DI configuration", "src/Storefront/DependencyInjection")
+  Component(controllerComp,    "Controller Layer",             "Handles HTTP requests and maps to page loaders", "src/Storefront/Controller")
+  Component(checkoutComp,      "Checkout Features",            "Checkout pages, cart & payment logic",          "src/Storefront/Checkout")
+  Component(pageComp,          "Page Loader",                  "Loads page data and creates page objects",     "src/Storefront/Page")
+  Component(pageletComp,       "Pagelet Loader",               "Loads individual pagelets asynchronously",      "src/Storefront/Pagelet")
+  Component(eventComp,         "Event System",                 "Defines storefront events and listeners",      "src/Storefront/Event")
+  Component(frameworkComp,     "Framework Utilities",          "Core classes and interfaces for storefront",   "src/Storefront/Framework")
+  Component(themeComp,         "Theme Integration",            "Manages theme inheritance and asset builds",  "src/Storefront/Theme")
+  Component(resourcesComp,     "Resources",                    "Twig templates, JS, CSS and static assets",   "src/Storefront/Resources")
+  Component(migrationComp,     "Database Migrations",          "Migration files for storefront schema changes", "src/Storefront/Migration")
+}
+
+'-------------------------------------------------------------------------------'
+' Component relationships and flow
+'-------------------------------------------------------------------------------'
+Rel(storefrontBundle, diComp,        "Registers services & compiler passes",      "Symfony DI")
+Rel(storefrontBundle, frameworkComp, "Provides theme interface implementation",   "PHP")
+Rel(storefrontBundle, migrationComp, "Registers migrations",                     "Doctrine Migrations")
+
+Rel(controllerComp,    pageComp,        "Delegates page requests to",               "PHP")
+Rel(controllerComp,    pageletComp,     "Delegates pagelet requests to",            "PHP")
+Rel(controllerComp,    checkoutComp,    "Handles checkout-related routes",          "Symfony HTTP")
+
+Rel(pageComp,          eventComp,       "Dispatches storefront lifecycle events",    "Symfony EventDispatcher")
+Rel(pageComp,          frameworkComp,   "Uses framework utilities",                 "PHP")
+Rel(pageComp,          resourcesComp,   "Renders pages via Twig templates",         "Twig")
+
+Rel(pageletComp,       resourcesComp,   "Renders pagelets via Twig templates",      "Twig")
+Rel(pageletComp,       eventComp,       "Dispatches storefront events",              "Symfony EventDispatcher")
+
+Rel(checkoutComp,      pageComp,        "Loads checkout-specific page data",        "PHP")
+Rel(checkoutComp,      frameworkComp,   "Uses framework utilities",                 "PHP")
+
+Rel(themeComp,         resourcesComp,   "Loads and compiles theme assets/templates", "Filesystem & Webpack")
+
+'-------------------------------------------------------------------------------'
+' Layout and legend
+'-------------------------------------------------------------------------------'
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml

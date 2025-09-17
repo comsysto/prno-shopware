@@ -1,0 +1,60 @@
+@startuml C4_Context_Shopware
+'-----------------------------------------------------------------------------'
+' C4-PlantUML setup (you need https://github.com/plantuml-stdlib/C4-PlantUML)
+'-----------------------------------------------------------------------------
+!define RELATIVE_INCLUDE
+!include C4P/C4_Context.puml
+!include C4P/C4_Component.puml
+
+'-----------------------------------------------------------------------------'
+' 1) People / Actors'
+'-----------------------------------------------------------------------------
+Person(customer,     "Shopper / Customer",          "B2C or B2B shopper browsing and buying products")
+Person(storeOwner,   "Store Owner",                 "Owns/runs one or more Shopware stores")
+Person(admin,        "Shop Administrator",          "Configures catalogue, promotions, content, orders")
+Person(integrator,   "Integrator / Developer",       "Builds plugins, integrations, custom themes")
+
+'-----------------------------------------------------------------------------'
+' 2) The System Boundary'
+'-----------------------------------------------------------------------------
+System_Boundary(sw, "Shopware eCommerce Platform") {
+  System(shopware, "Shopware", "A modular e‑commerce platform\n(catalogue, checkout, orders, API)")
+}
+
+'-----------------------------------------------------------------------------'
+' 3) Relationships People ↔ System'
+'-----------------------------------------------------------------------------
+Rel(customer,   shopware,  "Browses products, places orders")
+Rel(storeOwner, shopware,  "Views reports & configures business settings")
+Rel(admin,      shopware,  "Manages products, content & orders")
+Rel(integrator, shopware,  "Extends functionality via plugins & API")
+
+'-----------------------------------------------------------------------------'
+' 4) Key External Systems'
+'-----------------------------------------------------------------------------
+System_Ext(payment,    "Payment Service\n(PayPal, Stripe, etc.)",           "Processes customer payments")
+System_Ext(shipping,   "Shipping Provider\n(DHL, UPS, FedEx, etc.)",      "Handles shipment & tracking")
+System_Ext(erp,        "ERP System",                                     "Manages inventory, invoicing & fulfillment")
+System_Ext(pim,        "PIM System",                                     "Central product information management")
+System_Ext(search,     "Search & Recommendation Engine",                 "Faceted search, personalization & recommendations")
+System_Ext(marketing,  "Marketing & Analytics",                          "Email, campaigns, customer insights")
+System_Ext(crm,        "CRM / Customer Management",                      "Customer data and support tickets")
+
+'-----------------------------------------------------------------------------'
+' 5) Relationships System ↔ External Systems'
+'-----------------------------------------------------------------------------
+Rel(shopware, payment,   "Integrates via API\nauthorizes & captures payments")
+Rel(shopware, shipping,  "Sends shipment orders & tracks status")
+Rel(shopware, erp,       "Syncs products, orders & stock levels")
+Rel(shopware, pim,       "Imports product catalogue metadata")
+Rel(shopware, search,    "Query for product search & recommendations")
+Rel(shopware, marketing, "Sends customer/shop events\ne.g. abandoned cart, order placed")
+Rel(shopware, crm,       "Exposes customer & order data")
+
+'-----------------------------------------------------------------------------'
+' 6) Layout and styling tweaks (optional)
+'-----------------------------------------------------------------------------
+LAYOUT_LEFT_RIGHT()
+SHOW_LEGEND()
+
+@enduml
